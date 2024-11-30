@@ -10,47 +10,39 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final TextEditingController _cpfController = TextEditingController();
+  final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
   bool _isLoading = false; // Para o indicador de carregamento
 
   Future<void> _login() async {
-    String cpf = _cpfController.text;
+    String usuario = _usuarioController.text;
     String senha = _senhaController.text;
 
     // Validação dos campos
-    if (cpf.isEmpty || senha.isEmpty) {
-      _showError('CPF e Senha são obrigatórios');
+    if (usuario.isEmpty || senha.isEmpty) {
+      _showError('Usuário e Senha são obrigatórios');
       return;
-    }  
+    }
 
     setState(() {
       _isLoading = true; // Ativa o indicador de carregamento
     });
 
-    var url = Uri.parse('http://10.0.2.2:5000/login');
-
-    // Imprimindo valores de depuração
-    print('Tentando fazer login com CPF: $cpf e Senha: $senha');
+    var url = Uri.parse('http://10.0.2.2:5000/login'); // URL da API
 
     try {
       var response = await http.post(
         url,
         headers: {
           'Accept': 'application/json',
-          'content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: jsonEncode({'cpf': cpf, 'senha': senha}),
-        encoding: Encoding.getByName('utf-8')
+        body: jsonEncode({'usuario': usuario, 'senha': senha}),
       );
 
       setState(() {
         _isLoading = false; // Desativa o indicador de carregamento
       });
-
-      // Imprimindo o status da resposta e o corpo da resposta
-      print('Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
@@ -101,13 +93,12 @@ class _LoginFormState extends State<LoginForm> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Adicionando um ícone de login
               Icon(
                 Icons.person_outline,
-                size: 100,  // Definindo o tamanho do ícone
-                color: Colors.white,  // Cor do ícone
+                size: 100,
+                color: Colors.white,
               ),
-              const SizedBox(height: 20), // Espaçamento entre o ícone e o título
+              const SizedBox(height: 20),
               const Text(
                 "Faça seu Login",
                 style: TextStyle(
@@ -118,12 +109,12 @@ class _LoginFormState extends State<LoginForm> {
                 textAlign: TextAlign.center,
               ),
               TextFormField(
-                controller: _cpfController,
+                controller: _usuarioController,
                 autofocus: true,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 style: const TextStyle(color: Colors.white, fontSize: 20),
                 decoration: const InputDecoration(
-                  labelText: "CPF",
+                  labelText: "Usuário",
                   labelStyle: TextStyle(color: Colors.white),
                 ),
               ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'cadastro.dart';
 import 'loginForm.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,7 +12,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueAccent.shade700, // Cor de fundo suavizada
+      backgroundColor: Colors.blueAccent.shade700,
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -21,15 +20,13 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Logo ou ícone de app (opcional)
               Icon(
                 Icons.school_outlined,
                 color: Colors.white,
                 size: 100,
               ),
-              SizedBox(height: 20), // Espaço entre o ícone e o título
+              SizedBox(height: 20),
               
-              // Título "Gestão Escolar"
               Text(
                 "Gestão Escolar",
                 style: TextStyle(
@@ -40,9 +37,8 @@ class _LoginPageState extends State<LoginPage> {
                 textAlign: TextAlign.center,
               ),
               
-              SizedBox(height: 40), // Espaço entre o título e o primeiro botão
+              SizedBox(height: 40),
               
-              // Botão de Login
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -52,29 +48,6 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: Text(
                   "Login",
-                  style: TextStyle(fontSize: 18, color: Colors.blueAccent),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-              
-              SizedBox(height: 20), // Espaço entre os botões
-
-              // Botão de Cadastro
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Cadastro()),
-                  );
-                },
-                child: Text(
-                  "Cadastrar-se",
                   style: TextStyle(fontSize: 18, color: Colors.blueAccent),
                 ),
                 style: ElevatedButton.styleFrom(

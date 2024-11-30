@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gestao_escolar/screens/manageStudents.dart';
+import 'package:gestao_escolar/screens/manageTeacher.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -53,11 +55,25 @@ class _HomeState extends State<Home> {
               },
             ),
             ListTile(
+              leading: Icon(Icons.person_2),
+              title: const Text('Gerenciar Professores'),
+              onTap: () {
+                // Navegar para relatórios
+                Navigator.push(
+                  context,
+                   MaterialPageRoute(builder: (context)=> ManageTeacher()),
+                );
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.person),
               title: const Text('Gerenciar Alunos'),
               onTap: () {
                 // Navegar para gerenciamento de alunos
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                   MaterialPageRoute(builder: (context)=> Managestudents()),
+                );
               },
             ),
             ListTile(
