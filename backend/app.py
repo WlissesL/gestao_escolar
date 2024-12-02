@@ -223,37 +223,35 @@ def cadastrarAluno():
     finally:
         cursor.close()
         connection.close()
-
 @app.route('/atualizarAluno/<int:id_aluno>', methods=['PUT'])
 def atualizarAluno(id_aluno):
     dados = request.get_json()  # Recebe os dados do corpo da requisição
     nome = dados.get('nome')
-    data_nascimento = dados.get('data_nascimento')
-    matricula = dados.get('matricula')
+    matricula = dados.get('matricula')  # Adicionando matrícula
     fk_turma = dados.get('fk_turma')
-    fk_gestao = dados.get('fk_gestao')
+    data_nascimento = dados.get('data_nascimento')  # Adicionando data de nascimento
 
     # Verificar se os campos obrigatórios foram enviados
-    if not nome or not matricula:
-        return jsonify({'mensagem': 'Nome e matrícula são obrigatórios'}), 400
+    if not nome or not matricula or not data_nascimento:
+        return jsonify({'mensagem': 'Nome, matrícula e data de nascimento são obrigatórios'}), 400
 
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # SQL para atualizar o aluno com base no ID
+    # SQL para atualizar o aluno com base no ID (sem o campo e-mail)
     sql = """
         UPDATE aluno 
-        SET nome = %s, 
-            data_nascimento = %s, 
+        SET 
+            nome = %s, 
             matricula = %s, 
             fk_turma = %s, 
-            fk_gestao = %s
+            data_nascimento = %s  -- Incluindo data de nascimento
         WHERE id_aluno = %s
     """
 
     try:
         # Executa a atualização no banco de dados
-        cursor.execute(sql, (nome, data_nascimento, matricula, fk_turma, fk_gestao, id_aluno))
+        cursor.execute(sql, (nome, matricula, fk_turma, data_nascimento, id_aluno))
         connection.commit()
 
         # Verificar se algum registro foi atualizado
@@ -271,6 +269,10 @@ def atualizarAluno(id_aluno):
     finally:
         cursor.close()
         connection.close()
+
+
+
+
 
 
 @app.route('/deletarAluno/<int:id>', methods=['DELETE'])

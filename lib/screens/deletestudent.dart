@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class Deletestudent extends StatefulWidget {
+class DeleteStudent extends StatefulWidget {
   final Map<String, dynamic> student;  // Recebe as informações do aluno
   final VoidCallback onDelete;  // Callback para atualizar a lista após a exclusão
 
-  const Deletestudent({super.key, required this.student, required this.onDelete});
+  const DeleteStudent({super.key, required this.student, required this.onDelete});
 
   @override
-  State<Deletestudent> createState() => _DeletestudentState();
+  State<DeleteStudent> createState() => _DeleteStudentState();
 }
 
-class _DeletestudentState extends State<Deletestudent> {
+class _DeleteStudentState extends State<DeleteStudent> {
   bool isDeleting = false;  // Para controlar o estado de exclusão (loading)
 
   // Função para deletar o aluno
@@ -91,8 +91,9 @@ class _DeletestudentState extends State<Deletestudent> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Nome: ${widget.student['nome']}'),
-            Text('Curso: ${widget.student['curso']}'),
-            Text('E-mail: ${widget.student['email']}'),
+            // Alterado de 'Curso' para 'Data de Nascimento'
+            Text('Data de Nascimento: ${widget.student['data_nascimento']}'),
+            // Removido o campo de e-mail
             SizedBox(height: 20),
             isDeleting
                 ? Center(child: CircularProgressIndicator())  // Indicador de loading durante a exclusão

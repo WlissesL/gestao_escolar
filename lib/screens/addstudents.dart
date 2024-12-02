@@ -14,8 +14,8 @@ class Addstudent extends StatefulWidget {
 class _AddstudentState extends State<Addstudent> {
   final _formKey = GlobalKey<FormState>();
   final _nomeController = TextEditingController();
-  final _cursoController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _dataNascimentoController = TextEditingController();
+  final _matriculaController = TextEditingController(); // Controlador para matrícula
   int? _selectedTurmaId;
   List<Map<String, dynamic>> _turmas = [];
 
@@ -45,11 +45,11 @@ class _AddstudentState extends State<Addstudent> {
 
   // Função para adicionar aluno
   Future<void> addStudent() async {
-    final url = Uri.parse('http://10.0.2.2:5000/adicionarAluno');
+    final url = Uri.parse('http://10.0.2.2:5000/cadastrarAluno');
     final body = json.encode({
       'nome': _nomeController.text,
-      'curso': _cursoController.text,
-      'email': _emailController.text,
+      'data_nascimento': _dataNascimentoController.text,
+      'matricula': _matriculaController.text, // Enviando matrícula
       'fk_turma': _selectedTurmaId,  // Enviar o ID da turma selecionada
     });
 
@@ -102,21 +102,22 @@ class _AddstudentState extends State<Addstudent> {
                 },
               ),
               TextFormField(
-                controller: _cursoController,
-                decoration: InputDecoration(labelText: 'Curso'),
+                controller: _dataNascimentoController,
+                decoration: InputDecoration(labelText: 'Data de Nascimento'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Digite o curso do aluno';
+                    return 'Digite a data de nascimento do aluno';
                   }
                   return null;
                 },
+                keyboardType: TextInputType.datetime,
               ),
               TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'E-mail'),
+                controller: _matriculaController, // Novo campo de matrícula
+                decoration: InputDecoration(labelText: 'Matrícula'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Digite o e-mail do aluno';
+                    return 'Digite a matrícula do aluno';
                   }
                   return null;
                 },

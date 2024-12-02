@@ -3,9 +3,8 @@ import 'package:gestao_escolar/screens/addstudents.dart';
 import 'package:gestao_escolar/screens/deletestudent.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'editstudent.dart'; // Certifique-se de importar a tela de edição
-import 'deletestudent.dart'; // Importe a tela de exclusão
-import 'addstudents.dart';  // Crie e importe a tela de adicionar aluno
+import 'package:intl/intl.dart'; // Importando o pacote intl
+import 'editstudent.dart'; // Certifique-se de que a classe está nomeada corretamente
 
 class ManageStudent extends StatefulWidget {
   const ManageStudent({super.key});
@@ -61,19 +60,38 @@ class _ManageStudentState extends State<ManageStudent> {
           : ListView.builder(
               itemCount: students.length,
               itemBuilder: (context, index) {
-                final student = students[index];
+                final student = {
+                  'id_aluno': students[index]['id_aluno'],
+                  'nome': students[index]['nome'] ?? 'Sem nome',
+                  'matricula': students[index]['matricula'] ?? 'Sem matrícula',
+                  'data_nascimento': students[index]['data_nascimento'] ?? 'Sem data de nascimento',
+                  'fk_turma': students[index]['fk_turma'] ?? null,
+                };
+
+                // Formatar a data de nascimento antes de exibi-la
+                String formattedDate = student['data_nascimento'];
+                if (formattedDate != 'Sem data de nascimento') {
+                  try {
+                    // Tentando converter a string para DateTime
+                    DateTime date = DateTime.parse(formattedDate);
+                    formattedDate = DateFormat('dd/MM/yyyy').format(date); // Formato padrão dd/MM/yyyy
+                  } catch (e) {
+                    // Caso não consiga fazer o parse, marca como 'Data inválida'
+                    formattedDate = 'Data inválida';
+                  }
+                }
 
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: ListTile(
-                    title: Text(student['nome'] ?? 'Sem nome', style: TextStyle(fontWeight: FontWeight.bold)),
+                    title: Text(student['nome'], style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Curso: ${student['curso'] ?? 'Sem curso'}'),
-                          Text('E-mail: ${student['email'] ?? 'Sem e-mail'}'),
+                          Text('Matrícula: ${student['matricula']}'), // Exibição da matrícula
+                          Text('Data de Nascimento: $formattedDate'), // Exibindo a data formatada
                           Text('ID: ${student['id_aluno']}'),
                         ],
                       ),
@@ -85,13 +103,12 @@ class _ManageStudentState extends State<ManageStudent> {
                         IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {
-                            // Navegar para a tela de edição
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Editstudent(
+                                builder: (context) => EditStudent(
                                   student: student,
-                                  onSave: fetchStudents, // Atualizar a lista após edição
+                                  onSave: fetchStudents, // Atualizar lista após edição
                                 ),
                               ),
                             );
@@ -101,13 +118,12 @@ class _ManageStudentState extends State<ManageStudent> {
                         IconButton(
                           icon: Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
-                            // Navegar para a tela de confirmação de exclusão
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Deletestudent(
+                                builder: (context) => DeleteStudent(
                                   student: student,
-                                  onDelete: fetchStudents, // Atualizar a lista após exclusão
+                                  onDelete: fetchStudents, // Atualizar lista após exclusão
                                 ),
                               ),
                             );
@@ -119,15 +135,13 @@ class _ManageStudentState extends State<ManageStudent> {
                 );
               },
             ),
-      // Botão flutuante para adicionar aluno
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navegar para a tela de adicionar novo aluno
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => Addstudent(
-                onSave: fetchStudents, // Atualizar a lista após adicionar
+                onSave: fetchStudents, // Atualizar lista após adicionar
               ),
             ),
           );
