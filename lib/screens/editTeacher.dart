@@ -29,6 +29,14 @@ class _EditteacherState extends State<Editteacher> {
     final id = widget.teacher['id_professor']; // Obtém o ID correto do professor
     final url = Uri.parse('http://10.0.2.2:5000/atualizarProfessor/$id'); // URL da API com ID do professor
 
+    // Validação de campos
+    if (nameController.text.isEmpty || specialityController.text.isEmpty || emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Todos os campos devem ser preenchidos!')),
+      );
+      return; // Não envia a requisição se algum campo estiver vazio
+    }
+
     try {
       // Enviar a requisição PUT
       final response = await http.put(
@@ -51,7 +59,10 @@ class _EditteacherState extends State<Editteacher> {
         Navigator.pop(context); // Volta para a página anterior
       } else {
         // Exibir erro se a resposta não for 200 OK
-        throw Exception('Falha ao atualizar professor');
+        final responseMessage = json.decode(response.body)['mensagem'] ?? 'Falha ao atualizar professor';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseMessage)),
+        );
       }
     } catch (e) {
       // Exibir erro em caso de falha na requisição

@@ -72,7 +72,7 @@ class _HomeState extends State<Home> {
                 // Navegar para gerenciamento de alunos
                 Navigator.push(
                   context,
-                   MaterialPageRoute(builder: (context)=> Managestudents()),
+                   MaterialPageRoute(builder: (context)=> ManageStudent()),
                 );
               },
             ),

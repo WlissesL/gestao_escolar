@@ -110,33 +110,26 @@ def cadastrarProfessor():
         cursor.close()
         connection.close()
 
-
-
 @app.route('/atualizarProfessor/<int:id_professor>', methods=['PUT'])
 def atualizarProfessor(id_professor):
     dados = request.get_json()  # Recebe os dados do corpo da requisição
     nome = dados.get('nome')
     especialidade = dados.get('especialidade')
     email = dados.get('email')
-    fk_gestao = dados.get('fk_gestao')
-    fk_login = dados.get('fk_login')
 
     # Verificar se os campos obrigatórios foram enviados
     if not nome or not email:
         return jsonify({'mensagem': 'Nome e e-mail são obrigatórios'}), 400
 
-    if not fk_gestao or not fk_login:
-        return jsonify({'mensagem': 'Gestão e login são obrigatórios'}), 400
-
     connection = get_db_connection()
     cursor = connection.cursor()
 
     # SQL para atualizar o professor com base no ID
-    sql = "UPDATE professor SET nome = %s, especialidade = %s, email = %s, fk_gestao = %s, fk_login = %s WHERE id_professor = %s"
+    sql = "UPDATE professor SET nome = %s, especialidade = %s, email = %s WHERE id_professor = %s"
 
     try:
         # Executa a atualização no banco de dados
-        cursor.execute(sql, (nome, especialidade, email, fk_gestao, fk_login, id_professor))
+        cursor.execute(sql, (nome, especialidade, email, id_professor))
         connection.commit()
 
         # Verificar se algum registro foi atualizado
@@ -154,6 +147,189 @@ def atualizarProfessor(id_professor):
     finally:
         cursor.close()
         connection.close()
+
+
+@app.route('/deletarProfessor/<int:id>', methods=['DELETE'])
+def delete_teacher(id):
+    try:
+        print(f"Tentando excluir professor com ID: {id}")  # Log para depuração
+        # Conexão com o banco
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Comando de exclusão
+        cursor.execute('DELETE FROM professor WHERE id_professor = %s', (id,))
+        connection.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({'mensagem': 'Professor não encontrado.'}), 404
+
+        return jsonify({'mensagem': 'Professor deletado com sucesso!'}), 200
+    except Exception as e:
+        return jsonify({'mensagem': 'Erro ao deletar professor', 'erro': str(e)}), 400
+    finally:
+        cursor.close()
+        connection.close()
+
+
+@app.route('/aluno', methods=['GET'])
+def listarAlunos():
+    connection = get_db_connection()
+    cursor = connection.cursor(pymysql.cursors.DictCursor)  # Retorna os resultados como dicionários
+
+    sql = "SELECT * FROM aluno"
+
+    try:
+        cursor.execute(sql)
+        alunos = cursor.fetchall()  # Recupera todos os registros da tabela aluno
+        return jsonify(alunos), 200
+    except pymysql.MySQLError as e:
+        return jsonify({'mensagem': 'Erro ao listar alunos', 'erro': str(e)}), 400
+    except Exception as e:
+        return jsonify({'mensagem': 'Erro inesperado', 'erro': str(e)}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+@app.route('/cadastrarAluno', methods=['POST'])
+def cadastrarAluno():
+    dados = request.get_json()
+    nome = dados.get('nome')
+    data_nascimento = dados.get('data_nascimento')
+    matricula = dados.get('matricula')
+    fk_turma = dados.get('fk_turma')
+    fk_gestao = dados.get('fk_gestao')
+
+    # Verificar campos obrigatórios
+    if not nome or not matricula:
+        return jsonify({'mensagem': 'Nome e matrícula são obrigatórios'}), 400
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    sql = "INSERT INTO aluno (nome, data_nascimento, matricula, fk_turma, fk_gestao) VALUES (%s, %s, %s, %s, %s)"
+
+    try:
+        # Executar a consulta
+        cursor.execute(sql, (nome, data_nascimento, matricula, fk_turma, fk_gestao))
+        connection.commit()
+        return jsonify({'mensagem': 'Aluno cadastrado com sucesso!'}), 201
+    except pymysql.MySQLError as e:
+        return jsonify({'mensagem': 'Erro ao cadastrar aluno', 'erro': str(e)}), 400
+    except Exception as e:
+        return jsonify({'mensagem': 'Erro inesperado', 'erro': str(e)}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.route('/atualizarAluno/<int:id_aluno>', methods=['PUT'])
+def atualizarAluno(id_aluno):
+    dados = request.get_json()  # Recebe os dados do corpo da requisição
+    nome = dados.get('nome')
+    data_nascimento = dados.get('data_nascimento')
+    matricula = dados.get('matricula')
+    fk_turma = dados.get('fk_turma')
+    fk_gestao = dados.get('fk_gestao')
+
+    # Verificar se os campos obrigatórios foram enviados
+    if not nome or not matricula:
+        return jsonify({'mensagem': 'Nome e matrícula são obrigatórios'}), 400
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    # SQL para atualizar o aluno com base no ID
+    sql = """
+        UPDATE aluno 
+        SET nome = %s, 
+            data_nascimento = %s, 
+            matricula = %s, 
+            fk_turma = %s, 
+            fk_gestao = %s
+        WHERE id_aluno = %s
+    """
+
+    try:
+        # Executa a atualização no banco de dados
+        cursor.execute(sql, (nome, data_nascimento, matricula, fk_turma, fk_gestao, id_aluno))
+        connection.commit()
+
+        # Verificar se algum registro foi atualizado
+        if cursor.rowcount == 0:
+            return jsonify({'mensagem': 'Aluno não encontrado'}), 404
+
+        return jsonify({'mensagem': 'Aluno atualizado com sucesso!'}), 200
+
+    except pymysql.MySQLError as e:
+        return jsonify({'mensagem': 'Erro ao atualizar aluno', 'erro': str(e)}), 500
+
+    except Exception as e:
+        return jsonify({'mensagem': 'Erro inesperado', 'erro': str(e)}), 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+@app.route('/deletarAluno/<int:id>', methods=['DELETE'])
+def delete_aluno(id):
+    try:
+        print(f"Tentando excluir aluno com ID: {id}")  # Log para depuração
+        # Conexão com o banco
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Comando de exclusão
+        cursor.execute('DELETE FROM aluno WHERE id_aluno = %s', (id,))
+        connection.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({'mensagem': 'Aluno não encontrado.'}), 404
+
+        return jsonify({'mensagem': 'Aluno deletado com sucesso!'}), 200
+    except Exception as e:
+        return jsonify({'mensagem': 'Erro ao deletar aluno', 'erro': str(e)}), 400
+    finally:
+        cursor.close()
+        connection.close()
+        
+
+
+@app.route('/listarTurmas', methods=['GET'])
+def listar_turmas():
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT id_turma, nome_turma, serie FROM turma")
+        turmas = cursor.fetchall()
+
+        turmas_list = []
+        for turma in turmas:
+            turmas_list.append({
+                'id_turma': turma[0],
+                'nome_turma': turma[1],
+                'serie': turma[2]
+            })
+
+        return jsonify(turmas_list), 200
+    except Exception as e:
+        return jsonify({'mensagem': 'Erro ao listar turmas', 'erro': str(e)}), 400
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+
+
+
+
+
+
+
 
 
 
